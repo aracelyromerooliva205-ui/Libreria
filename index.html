@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Rincón Literario - Dashboard Ejecutivo Q1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --primary: #1e3a8a;
+            --primary-light: #eff6ff;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        /* Contenedor Principal */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Encabezado */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        header p {
+            opacity: 0.85;
+            font-size: 0.9rem;
+        }
+
+        /* Grid de KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .kpi-info h3 {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-info .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .kpi-info .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .kpi-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .blue-icon { background-color: #dbeafe; color: #1e40af; }
+        .green-icon { background-color: #d1fae5; color: #065f46; }
+        .purple-icon { background-color: #f3e8ff; color: #6b21a8; }
+        .amber-icon { background-color: #fef3c7; color: #92400e; }
+
+        /* Sección de Gráficos (Grid) */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card-full {
+            grid-column: span 2;
+        }
+
+        .chart-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .chart-card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+        }
+
+        /* Tabla de Resumen */
+        .table-section {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .table-section h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-primary { background-color: #dbeafe; color: #1e40af; }
+
+        /* Adaptabilidad (Responsive) */
+        @media (max-width: 992px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-card-full {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            header { flex-direction: column; text-align: center; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <header>
+            <div>
+                <h1><i class="fa-solid Nav-icon fa-book-open"></i> El Rincón Literario</h1>
+                <p>Dashboard Corporativo de Rendimiento Ejecutivo</p>
+            </div>
+            <div>
+                <p><strong>Periodo:</strong> Primer Trimestre Q1 (Enero - Marzo)</p>
+            </div>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Ingresos Totales</h3>
+                    <div class="value">L 47,710.00</div>
+                    <div class="subtitle">Facturación bruta total del Q1</div>
+                </div>
+                <div class="kpi-icon blue-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Volumen de Ventas</h3>
+                    <div class="value">170</div>
+                    <div class="subtitle">Libros e inventario vendidos</div>
+                </div>
+                <div class="kpi-icon green-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Categoría Líder</h3>
+                    <div class="value">Cómics/Manga</div>
+                    <div class="subtitle">L 14,375.00 generados</div>
+                </div>
+                <div class="kpi-icon purple-icon">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Producto Estrella</h3>
+                    <div class="value" style="font-size: 1.15rem; margin-top: 0.3rem;">Academia Ninja Vol.2</div>
+                    <div class="subtitle">19 unidades distribuidas</div>
+                </div>
+                <div class="kpi-icon amber-icon">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            
+            <div class="chart-card chart-card-full">
+                <h2><i class="fa-solid fa-chart-line" style="color: var(--secondary);"></i> Tendencia de Ventas Mensuales (Ingresos)</h2>
+                <div class="chart-container">
+                    <canvas id="monthlySalesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2><i class="fa-solid fa-chart-bar" style="color: var(--success);"></i> Rendimiento Financiero por Categoría</h2>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2><i class="fa-solid fa-chart-pie" style="color: var(--warning);"></i> Distribución por Método de Pago</h2>
+                <div class="chart-container">
+                    <canvas id="paymentMethodChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="table-section">
+            <h2><i class="fa-solid fa-table-list" style="color: var(--primary);"></i> Resumen de Rendimiento de Categorías</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Unidades Vendidas</th>
+                        <th>Ingresos Totales (L)</th>
+                        <th>Estatus Operativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cómics/Manga</strong></td>
+                        <td>67 unidades</td>
+                        <td>L 14,375.00</td>
+                        <td><span class="badge badge-primary">Máximo Rendimiento</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Ficción</strong></td>
+                        <td>34 unidades</td>
+                        <td>L 12,230.00</td>
+                        <td><span class="badge badge-primary">Alta Rentabilidad</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Texto Académico</strong></td>
+                        <td>18 unidades</td>
+                        <td>L 10,715.00</td>
+                        <td><span class="badge badge-primary">Ticket Promedio Alto</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ficción</strong></td>
+                        <td>19 unidades</td>
+                        <td>L 5,970.00</td>
+                        <td><span class="badge" style="background-color: #f1f5f9; color: #475569;">Estable</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Infantil</strong></td>
+                        <td>32 unidades</td>
+                        <td>L 4,420.00</td>
+                        <td><span class="badge" style="background-color: #fef2f2; color: #991b1b;">Rotación Económica</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // Configuración Global de Chart.js para fuentes homogéneas
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        // 1. GRÁFICO DE LÍNEAS - Ventas Mensuales
+        const ctxMonthly = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(ctxMonthly, {
+            type: 'line',
+            data: {
+                labels: ['Enero', 'Febrero', 'Marzo'],
+                datasets: [{
+                    label: 'Ingresos Mensuales (Lempiras)',
+                    data: [23310, 10450, 13950],
+                    borderColor: '#0ea5e9',
+                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#1e3a8a',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. GRÁFICO DE BARRAS - Categorías
+        const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctxCategory, {
+            type: 'bar',
+            data: {
+                labels: ['Cómics/Manga', 'No Ficción', 'Texto Académico', 'Ficción', 'Infantil'],
+                datasets: [{
+                    label: 'Ingreso Total (L)',
+                    data: [14375, 12230, 10715, 5970, 4420],
+                    backgroundColor: [
+                        '#1e3a8a',
+                        '#0ea5e9',
+                        '#10b981',
+                        '#64748b',
+                        '#f59e0b'
+                    ],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 3. GRÁFICO DE DONA - Métodos de Pago
+        const ctxPayment = document.getElementById('paymentMethodChart').getContext('2d');
+        new Chart(ctxPayment, {
+            type: 'doughnut',
+            data: {
+                labels: ['Transferencia', 'Efectivo', 'Tarjeta de Crédito'],
+                datasets: [{
+                    data: [19500, 15035, 13175],
+                    backgroundColor: ['#10b981', '#f59e0b', '#0ea5e9'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, padding: 15 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
